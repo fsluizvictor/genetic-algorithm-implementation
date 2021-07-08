@@ -6,7 +6,7 @@ from src.interfaces.abstract_individual_services import AbstractIndividualServic
 from src.models.individual import Individual
 
 
-class Services(AbstractIndividualServices):
+class IndividualServices(AbstractIndividualServices):
 
     def __init__(self):
         pass
@@ -52,5 +52,5 @@ class Services(AbstractIndividualServices):
 
         return [first_son, second_son]
 
-    def to_rate(self, individual: Individual) -> Individual:
+    def to_rate(self, individual: Individual) -> float:
         pass

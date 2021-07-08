@@ -19,5 +19,5 @@ class AbstractIndividualServices(ABC):
         pass
 
     @abstractmethod
-    def to_rate(self, individual: Individual) -> Individual:
+    def to_rate(self, individual: Individual) -> float:
         pass

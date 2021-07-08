@@ -3,6 +3,7 @@ from random import random
 from typing import List
 
 from src import config
+from src.interfaces.individual_factory import IndividualFactory
 from src.models.individual import Individual
 from src.services.individual_services import IndividualServices
 
@@ -11,11 +12,20 @@ class GeneticAlgorithmsService(object):
     def __init__(self, individual_service: IndividualServices):
         self.individual_service = individual_service
 
-    def execute_to_dixon_price_function(self, amount_individuals: int):
-        self.__execute(self.__generate_initial_population_dixon_price_function(amount_individuals))
+    def execute_to_dixon_price_function(self, amount_individuals: int = config.AMOUNT_INDIVIDUALS,
+                                        individual_factory: IndividualFactory = None,
+                                        dimension: int = config.DIMENSION, amount_steps: int = config.AMOUNT_STEPS):
+        self.__execute(
+            self.__generate_initial_population_dixon_price_function(amount_individuals, individual_factory, dimension),
+            amount_steps)
 
-    def execute_to_perm_function_beta(self, amount_individuals: int):
-        self.__execute(self.__generate_initial_population_perm_function_d(amount_individuals))
+    def execute_to_perm_function_beta(self, amount_individuals: int = config.AMOUNT_INDIVIDUALS,
+                                      individual_factory: IndividualFactory = None,
+                                      dimension: int = config.DIMENSION, amount_steps: int = config.AMOUNT_STEPS):
+
+        self.__execute(
+            self.__generate_initial_population_perm_function_d(amount_individuals, individual_factory, dimension),
+            amount_steps)
 
     def __execute(self, initial_population: List[Individual], amount_steps: int):
         for s in range(amount_steps):
@@ -46,11 +56,17 @@ class GeneticAlgorithmsService(object):
 
         return individuals_selected
 
-    def __generate_initial_population_dixon_price_function(self, amount_individuals: int) -> List[Individual]:
-        pass
+    def __generate_initial_population_dixon_price_function(self, amount_individuals: int,
+                                                           individual_factory: IndividualFactory, dimension: int) -> \
+            List[Individual]:
 
-    def __generate_initial_population_perm_function_d(self, amount_individuals: int) -> List[Individual]:
-        pass
+        return individual_factory.get_individuals(amount_individuals, dimension)
+
+    def __generate_initial_population_perm_function_d(self, amount_individuals: int,
+                                                      individual_factory: IndividualFactory, dimension: int) -> List[
+        Individual]:
+
+        return individual_factory.get_individuals(amount_individuals, dimension)
 
     def __generate_sons(self, initial_population: List[Individual]) -> List[Individual]:
         sons = list()

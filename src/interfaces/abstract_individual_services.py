@@ -7,11 +7,11 @@ from src.models.individual import Individual
 class AbstractIndividualServices(ABC):
 
     @abstractmethod
-    def recombine(self, first_individual: Individual, second_individual: Individual) -> List[Individual]:
+    def crossover(self, first_individual: Individual, second_individual: Individual) -> List[Individual]:
         pass
 
     @abstractmethod
-    def recombine_arithmetic_crossover(self, first_individual: Individual, second_individual: Individual) -> List[Individual]:
+    def arithmetic_crossover(self, first_individual: Individual, second_individual: Individual) -> List[Individual]:
         pass
 
     @abstractmethod

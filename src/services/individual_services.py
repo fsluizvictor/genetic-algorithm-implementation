@@ -30,7 +30,7 @@ class IndividualServices(AbstractIndividualServices):
 
         return mutate
 
-    def recombine_arithmetic_crossover(self, first_individual: Individual, second_individual: Individual) -> List[
+    def arithmetic_crossover(self, first_individual: Individual, second_individual: Individual) -> List[
         Individual]:
         sons = list()
         rate = first_individual.rate

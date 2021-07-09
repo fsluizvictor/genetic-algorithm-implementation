@@ -1,4 +1,4 @@
-from random import random
+import random
 from typing import List
 
 from src.models.individual import Individual
@@ -7,7 +7,7 @@ from src.models.individual import Individual
 class DixonPriceFunction(Individual):
     def __init__(self, dimension: int):
         super().__init__(dimension)
-        super()._genes = [random.uniform(-10, 10) for i in range(int(dimension))]
+        self._genes = [random.uniform(-10, 10) for i in range(int(dimension))]
 
     @property
     def genes(self):

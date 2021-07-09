@@ -7,7 +7,7 @@ from src.models.individual import Individual
 class AbstractIndividualServices(ABC):
 
     @abstractmethod
-    def crossover(self, first_individual: Individual, second_individual: Individual) -> List[Individual]:
+    def blx_alfa_crossover(self, first_individual: Individual, second_individual: Individual) -> List[Individual]:
         pass
 
     @abstractmethod

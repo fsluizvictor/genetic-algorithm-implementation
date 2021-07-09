@@ -15,3 +15,5 @@ class PermFunctionDServices(IndividualServices):
             outer += inner.__pow__(2)
 
         return outer
+
+

@@ -1,5 +1,5 @@
 import operator
-from random import random
+import random
 from typing import List
 
 from src import config
@@ -96,7 +96,8 @@ class GeneticAlgorithmsService(object):
     def __addited_roulette(self, individuals_population: List[Individual], amount_individual: int) -> List[Individual]:
         new_rates = list()
         for i in range(len(individuals_population)):
-            new_rates.append(1 / individuals_population[i].rate)
+            if individuals_population[i].rate > 0:
+                new_rates.append(1 / individuals_population[i].rate)
 
         individuals_selected = list()
 

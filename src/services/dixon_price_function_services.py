@@ -19,15 +19,3 @@ class DixonPriceFunctionService(IndividualServices):
             sum += new
         return float(term_1 + sum)
 
-
-def main():
-    ind = DixonPriceFunction(2)
-    print(ind.genes)
-    ind.genes = [1,2]
-    print(ind.genes)
-    teste = DixonPriceFunctionService()
-    print((teste.to_rate(ind)))
-
-
-if __name__ == "__main__":
-    main()

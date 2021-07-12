@@ -13,14 +13,14 @@ class IndividualServices(AbstractIndividualServices):
         for i in range(len(individual.genes)):
             rate_mutate = random.randint(0, 100)
             if rate_mutate > 100:
-                mutate_genes.append(individual.genes[i] * config.ARITHMETIC_CROSSOVER_COEFFICIENT + individual.genes[i])
+                mutate_genes.append(individual.genes[i] * random.gauss(0, 0.1) + individual.genes[i])
             else:
                 mutate_genes.append(individual.genes[i])
 
         if individual.genes.__eq__(mutate_genes):
             index_random = random.randint(0, len(mutate_genes) - 1)
             mutate_genes.append(
-                mutate_genes[index_random] * config.ARITHMETIC_CROSSOVER_COEFFICIENT + mutate_genes[index_random])
+                mutate_genes[index_random] * random.gauss(0, 0.1) + mutate_genes[index_random])
             mutate_genes.remove(mutate_genes[index_random])
 
         mutate = Individual(individual.rate)

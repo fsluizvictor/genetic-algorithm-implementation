@@ -90,8 +90,8 @@ class GeneticAlgorithmsService(object):
     def __generate_sons(self, initial_population: List[Individual]) -> List[Individual]:
         sons = list()
         for i in range(0, len(initial_population), 2):
-            sons.extend(self.individual_service.arithmetic_crossover(initial_population[i], initial_population[i + 1]))
-            # sons.extend(self.individual_service.blx_alfa_crossover(initial_population[i], initial_population[i + 1]))
+            #sons.extend(self.individual_service.arithmetic_crossover(initial_population[i], initial_population[i + 1]))
+            sons.extend(self.individual_service.blx_alfa_crossover(initial_population[i], initial_population[i + 1]))
         return sons
 
     def __generate_mutantes(self, initial_population: List[Individual]) -> List[Individual]:

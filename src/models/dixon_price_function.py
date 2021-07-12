@@ -16,3 +16,4 @@ class DixonPriceFunction(Individual):
     @genes.setter
     def genes(self, genes: List[float]):
         self._genes = genes
+

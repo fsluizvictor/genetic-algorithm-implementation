@@ -25,7 +25,7 @@ class DixonPriceFunctionService(IndividualServices):
 def main():
     ind = DixonPriceFunction(2)
     print(ind.genes)
-    ind.genes = [1, 2]
+    ind.genes = [2.916096244014552, 0.25274038180822345]
     print(ind.genes)
     teste = DixonPriceFunctionService()
     print(int(teste.to_rate(ind)))

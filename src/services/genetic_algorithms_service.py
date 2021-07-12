@@ -1,11 +1,15 @@
 import operator
 import random
+import sys
 from typing import List
 
 from src import config
 from src.interfaces.individual_factory import IndividualFactory
 from src.models.individual import Individual
+from src.services.dixon_price_function_services import DixonPriceFunctionService
 from src.services.individual_services import IndividualServices
+from src.services.perm_function_d_services import PermFunctionDServices
+from src.view.show_data import ShowData
 
 
 class GeneticAlgorithmsService(object):
@@ -14,20 +18,26 @@ class GeneticAlgorithmsService(object):
 
     def execute_to_dixon_price_function(self, amount_individuals: int = config.AMOUNT_INDIVIDUALS,
                                         individual_factory: IndividualFactory = None,
-                                        dimension: int = config.DIMENSION, amount_steps: int = config.AMOUNT_STEPS):
+                                        dimension: int = config.DIMENSION, amount_steps: int = config.AMOUNT_STEPS,
+                                        show_individual: ShowData = None,
+                                        dixon_price_function_service: DixonPriceFunctionService = None):
+
         self.__execute(
             self.__generate_initial_population_dixon_price_function(amount_individuals, individual_factory, dimension),
-            amount_steps)
+            amount_steps, show_individual, dixon_price_function_service)
 
     def execute_to_perm_function_beta(self, amount_individuals: int = config.AMOUNT_INDIVIDUALS,
                                       individual_factory: IndividualFactory = None,
-                                      dimension: int = config.DIMENSION, amount_steps: int = config.AMOUNT_STEPS):
+                                      dimension: int = config.DIMENSION, amount_steps: int = config.AMOUNT_STEPS,
+                                      show_individual: ShowData = None,
+                                      perm_function_beta_service: PermFunctionDServices = None):
 
         self.__execute(
             self.__generate_initial_population_perm_function_d(amount_individuals, individual_factory, dimension),
-            amount_steps)
+            amount_steps, show_individual, perm_function_beta_service)
 
-    def __execute(self, initial_population: List[Individual], amount_steps: int):
+    def __execute(self, initial_population: List[Individual], amount_steps: int, show_individual: ShowData,
+                  individual_services: IndividualServices):
         for s in range(amount_steps):
             sons_population = self.__generate_sons(initial_population)
             mutants_population = self.__generate_mutantes(initial_population)
@@ -37,9 +47,11 @@ class GeneticAlgorithmsService(object):
             all_population.extend(sons_population)
             all_population.extend(mutants_population)
 
+            all_population = self.__recalculing_to_rate(all_population, individual_services)
+
             selected_individuals = self.__selection(all_population, config.AMOUNT_INDIVIDUALS_FOR_ROULETTE,
                                                     config.AMOUNT_INDIVIDUALS_FOR_ELISTISM)
-            self.__get_better_individual(selected_individuals)
+            self.__get_better_individual(s, selected_individuals, show_individual)
 
     def __selection(self, individuals_population: List[Individual], amount_individuals_for_roulette: int,
                     amount_individuals_for_elitism: int) -> List[Individual]:
@@ -63,8 +75,8 @@ class GeneticAlgorithmsService(object):
         return individual_factory.get_individuals(amount_individuals, dimension)
 
     def __generate_initial_population_perm_function_d(self, amount_individuals: int,
-                                                      individual_factory: IndividualFactory, dimension: int) -> List[
-        Individual]:
+                                                      individual_factory: IndividualFactory, dimension: int) -> \
+            List[Individual]:
 
         return individual_factory.get_individuals(amount_individuals, dimension)
 
@@ -72,7 +84,8 @@ class GeneticAlgorithmsService(object):
         sons = list()
         for i in range(0, len(initial_population) - 2, 2):
             for j in range(1, len(initial_population) - 1, 2):
-                sons.extend(self.individual_service.arithmetic_crossover(initial_population[i], initial_population[j]))
+                # sons.extend(self.individual_service.arithmetic_crossover(initial_population[i], initial_population[j]))
+                sons.extend(self.individual_service.blx_alfa_crossover(initial_population[i], initial_population[j]))
         return sons
 
     def __generate_mutantes(self, initial_population: List[Individual]) -> List[Individual]:
@@ -82,8 +95,14 @@ class GeneticAlgorithmsService(object):
             mutants.append(mutant)
         return mutants
 
-    def __get_better_individual(self, individuals: List[Individual]):
-        pass
+    def __get_better_individual(self, step_generation: int, individuals: List[Individual], show_individual: ShowData):
+        better_individual = Individual(config.DIMENSION)
+        better_individual.rate = sys.maxsize
+        for i in range(len(individuals)):
+            if individuals[i].rate < better_individual.rate:
+                better_individual = individuals[i]
+
+        show_individual.show_better_individual(step_generation, better_individual)
 
     def __elitism(self, individuals_population: List[Individual], amount_elitism: int) -> List[Individual]:
         elitism_individuals = list()
@@ -117,3 +136,11 @@ class GeneticAlgorithmsService(object):
                     break
 
         return individuals_selected
+
+    def __recalculing_to_rate(self, individuals: List[Individual],
+                              individual_services_not_generic: IndividualServices) -> List[Individual]:
+
+        rates = [individual_services_not_generic.to_rate(individual) for individual in individuals]
+        for i in range(len(individuals)):
+            individuals[i].rate = rates[i]
+        return individuals

@@ -37,3 +37,6 @@ class Individual(object):
     @property
     def is_minimization(self):
         return self._is_minimization
+
+    def __eq__(self, other):
+        return self._genes == other

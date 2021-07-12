@@ -17,7 +17,7 @@ class IndividualServices(AbstractIndividualServices):
             else:
                 mutate_genes.append(individual.genes[i])
 
-        if (individual.genes.__eq__(mutate_genes)):
+        if individual.genes.__eq__(mutate_genes):
             index_random = random.randint(0, len(mutate_genes) - 1)
             mutate_genes.append(
                 mutate_genes[index_random] * config.ARITHMETIC_CROSSOVER_COEFFICIENT + mutate_genes[index_random])
@@ -27,30 +27,33 @@ class IndividualServices(AbstractIndividualServices):
 
         return mutate
 
-    def arithmetic_crossover(self, first_individual: Individual, second_individual: Individual) -> List[
-        Individual]:
-        sons = list()
-        rate = first_individual.rate
+    def arithmetic_crossover(self, first_individual: Individual, second_individual: Individual) -> List[Individual]:
+        dimension = first_individual.dimension
 
-        first_son = Individual(rate)
-        second_son = Individual(rate)
-        for i in range(int(rate)):
-            first_pos_random = random.randint(0, int(rate) - 1)
-            second_pos_random = random.randint(0, int(rate) - 1)
-
+        first_son = Individual(dimension)
+        second_son = Individual(dimension)
+        for i in range(dimension):
             first_son.genes[i] = (1 - config.ARITHMETIC_CROSSOVER_COEFFICIENT) * first_individual.genes[
-                first_pos_random] + config.ARITHMETIC_CROSSOVER_COEFFICIENT * second_individual.genes[second_pos_random]
-
-            first_pos_random = random.randint(0, int(rate) - 1)
-            second_pos_random = random.randint(0, int(rate) - 1)
+                i] + config.ARITHMETIC_CROSSOVER_COEFFICIENT * second_individual.genes[i]
 
             second_son.genes[i] = (1 - config.ARITHMETIC_CROSSOVER_COEFFICIENT) * second_individual.genes[
-                first_pos_random] + config.ARITHMETIC_CROSSOVER_COEFFICIENT * first_individual.genes[second_pos_random]
+                i] + config.ARITHMETIC_CROSSOVER_COEFFICIENT * first_individual.genes[i]
 
         return [first_son, second_son]
 
-    def to_rate(self, individual: Individual) -> float:
-        pass
-
     def blx_alfa_crossover(self, first_individual: Individual, second_individual: Individual) -> List[Individual]:
+        dimension = first_individual.dimension
+
+        first_son = Individual(dimension)
+        second_son = Individual(dimension)
+
+        for i in range(dimension):
+            first_son.genes[i] = first_individual.genes[i] + random.gauss(0, 0.1) * abs(
+                first_individual.genes[i] - second_individual.genes[i])
+
+            second_son.genes[i] = second_individual.genes[i] + random.gauss(0, 0.1) * abs(
+                first_individual.genes[i] - second_individual.genes[i])
+        return [first_son, second_son]
+
+    def to_rate(self, individual: Individual) -> float:
         pass

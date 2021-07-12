@@ -3,7 +3,7 @@ from typing import List
 
 
 class Individual(object):
-    def __init__(self, dimension: int):
+    def __init__(self, dimension: int = 2):
         self._rate = 0.0
         self._genes = list()
         self._genes = [random.uniform(-dimension, dimension) for i in range(int(dimension))]

@@ -5,7 +5,9 @@ from typing import List
 
 from src import config
 from src.interfaces.individual_factory import IndividualFactory
+from src.models.dixon_price_function import DixonPriceFunction
 from src.models.individual import Individual
+from src.models.perm_function_d import PermFunctionD
 from src.services.dixon_price_function_services import DixonPriceFunctionService
 from src.services.individual_services import IndividualServices
 from src.services.perm_function_d_services import PermFunctionDServices
@@ -24,7 +26,7 @@ class GeneticAlgorithmsService(object):
 
         self.__execute(
             self.__generate_initial_population_dixon_price_function(amount_individuals, individual_factory, dimension),
-            amount_steps, show_individual, dixon_price_function_service)
+            amount_steps, show_individual, dixon_price_function_service, config.DIXON_PRICE_FUNCTION)
 
     def execute_to_perm_function_beta(self, amount_individuals: int = config.AMOUNT_INDIVIDUALS,
                                       individual_factory: IndividualFactory = None,
@@ -34,10 +36,10 @@ class GeneticAlgorithmsService(object):
 
         self.__execute(
             self.__generate_initial_population_perm_function_d(amount_individuals, individual_factory, dimension),
-            amount_steps, show_individual, perm_function_beta_service)
+            amount_steps, show_individual, perm_function_beta_service, config.PERM_FUNCTION_D)
 
     def __execute(self, initial_population: List[Individual], amount_steps: int, show_individual: ShowData,
-                  individual_services: IndividualServices):
+                  individual_services: IndividualServices, funtion_to_execution: str):
         for s in range(amount_steps):
             sons_population = self.__generate_sons(initial_population)
             mutants_population = self.__generate_mutantes(initial_population)
@@ -47,7 +49,11 @@ class GeneticAlgorithmsService(object):
             all_population.extend(sons_population)
             all_population.extend(mutants_population)
 
-            all_population = self.__recalculing_to_rate(all_population, individual_services)
+            if funtion_to_execution == config.DIXON_PRICE_FUNCTION:
+                all_population = self.__recalculing_to_rate_dixon_price_function(all_population, individual_services)
+
+            if funtion_to_execution == config.PERM_FUNCTION_D:
+                all_population = self.__recalculing_to_rate_perm_function_D(all_population, individual_services)
 
             selected_individuals = self.__selection(all_population, config.AMOUNT_INDIVIDUALS_FOR_ROULETTE,
                                                     config.AMOUNT_INDIVIDUALS_FOR_ELISTISM)
@@ -55,6 +61,7 @@ class GeneticAlgorithmsService(object):
 
     def __selection(self, individuals_population: List[Individual], amount_individuals_for_roulette: int,
                     amount_individuals_for_elitism: int) -> List[Individual]:
+
         elitism_individuals = self.__elitism(individuals_population, amount_individuals_for_elitism)
 
         for i in range(len(elitism_individuals)):
@@ -82,16 +89,15 @@ class GeneticAlgorithmsService(object):
 
     def __generate_sons(self, initial_population: List[Individual]) -> List[Individual]:
         sons = list()
-        for i in range(0, len(initial_population) - 2, 2):
-            for j in range(1, len(initial_population) - 1, 2):
-                # sons.extend(self.individual_service.arithmetic_crossover(initial_population[i], initial_population[j]))
-                sons.extend(self.individual_service.blx_alfa_crossover(initial_population[i], initial_population[j]))
+        for i in range(0, len(initial_population), 2):
+            sons.extend(self.individual_service.arithmetic_crossover(initial_population[i], initial_population[i + 1]))
+            # sons.extend(self.individual_service.blx_alfa_crossover(initial_population[i], initial_population[i + 1]))
         return sons
 
     def __generate_mutantes(self, initial_population: List[Individual]) -> List[Individual]:
         mutants = list()
-        for i in range(len(initial_population)):
-            mutant = self.individual_service.mutate(initial_population[i])
+        for individual in initial_population:
+            mutant = self.individual_service.mutate(individual)
             mutants.append(mutant)
         return mutants
 
@@ -140,6 +146,33 @@ class GeneticAlgorithmsService(object):
     def __recalculing_to_rate(self, individuals: List[Individual],
                               individual_services_not_generic: IndividualServices) -> List[Individual]:
 
+        if isinstance(individuals[0], DixonPriceFunction):
+            individual_services_not_generic = DixonPriceFunctionService()
+
+        if isinstance(individuals[0], PermFunctionD):
+            individual_services_not_generic = PermFunctionDServices()
+
+        rates = [individual_services_not_generic.to_rate(individual) for individual in individuals]
+
+        for i in range(len(individuals)):
+            individuals[i].rate = rates[i]
+
+        return individuals
+
+    def __recalculing_to_rate_dixon_price_function(self, individuals: List[Individual],
+                                                   individual_services_not_generic: IndividualServices) -> List[
+        Individual]:
+
+        individual_services_not_generic = DixonPriceFunctionService()
+        rates = [individual_services_not_generic.to_rate(individual) for individual in individuals]
+        for i in range(len(individuals)):
+            individuals[i].rate = rates[i]
+        return individuals
+
+    def __recalculing_to_rate_perm_function_D(self, individuals: List[Individual],
+                                              individual_services_not_generic: IndividualServices) -> List[Individual]:
+
+        individual_services_not_generic = PermFunctionDServices()
         rates = [individual_services_not_generic.to_rate(individual) for individual in individuals]
         for i in range(len(individuals)):
             individuals[i].rate = rates[i]

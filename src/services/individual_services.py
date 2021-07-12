@@ -21,6 +21,7 @@ class IndividualServices(AbstractIndividualServices):
             index_random = random.randint(0, len(mutate_genes) - 1)
             mutate_genes.append(
                 mutate_genes[index_random] * config.ARITHMETIC_CROSSOVER_COEFFICIENT + mutate_genes[index_random])
+            mutate_genes.remove(mutate_genes[index_random])
 
         mutate = Individual(individual.rate)
         mutate.genes = mutate_genes

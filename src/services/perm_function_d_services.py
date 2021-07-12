@@ -20,10 +20,10 @@ class PermFunctionDServices(IndividualServices):
 
 def main():
     ind = PermFunctionD(2)
-    #ind.genes = [1, 2]
+    ind.genes = [1.3623910215037371, 1.7340527695749561]
     print(ind.genes)
     teste = PermFunctionDServices()
-    print(int(teste.to_rate(ind)))
+    print(teste.to_rate(ind))
 
 
 if __name__ == "__main__":

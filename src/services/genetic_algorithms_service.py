@@ -57,7 +57,7 @@ class GeneticAlgorithmsService(object):
 
             selected_individuals = self.__selection(all_population, config.AMOUNT_INDIVIDUALS_FOR_ROULETTE,
                                                     config.AMOUNT_INDIVIDUALS_FOR_ELISTISM)
-            self.__get_better_individual(s, selected_individuals, show_individual)
+            self.__get_better_individual(s, selected_individuals, show_individual, funtion_to_execution)
 
     def __selection(self, individuals_population: List[Individual], amount_individuals_for_roulette: int,
                     amount_individuals_for_elitism: int) -> List[Individual]:
@@ -101,14 +101,18 @@ class GeneticAlgorithmsService(object):
             mutants.append(mutant)
         return mutants
 
-    def __get_better_individual(self, step_generation: int, individuals: List[Individual], show_individual: ShowData):
+    def __get_better_individual(self, step_generation: int, individuals: List[Individual], show_individual: ShowData,
+                                funtion_to_execution: str):
         better_individual = Individual(config.DIMENSION)
         better_individual.rate = sys.maxsize
         for i in range(len(individuals)):
             if individuals[i].rate < better_individual.rate:
                 better_individual = individuals[i]
+        if funtion_to_execution == config.DIXON_PRICE_FUNCTION:
+            show_individual.show_better_individual_dixon_price(step_generation, better_individual)
 
-        show_individual.show_better_individual(step_generation, better_individual)
+        if funtion_to_execution == config.PERM_FUNCTION_D:
+            show_individual.show_better_individual_perm_function(step_generation, better_individual)
 
     def __elitism(self, individuals_population: List[Individual], amount_elitism: int) -> List[Individual]:
         elitism_individuals = list()

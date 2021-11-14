@@ -1,6 +1,6 @@
 # Genetic Algorithm
 
-In this repository contains a implementation of genetic algorithm.
+In this repository contains a implementation of genetic algorithm using any optimization functions.
 
 Link to datasets:
 
